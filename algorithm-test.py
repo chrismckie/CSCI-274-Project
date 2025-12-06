@@ -1,4 +1,4 @@
-import intervalScheduling as wis
+import weighed_interval_scheduling as wis
 
 # Example from lecture slides to test the algorithm code
 interval = ['A', 'B', 'C', 'D', 'E', 'F','G','H']
