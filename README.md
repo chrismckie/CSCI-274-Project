@@ -11,3 +11,32 @@ This project uses two real-world datasets  (e.g., the Google Job Scheduling Data
 **Goal:** The objective is to optimize job assignments by balancing time constraints and profit values, ensuring that the system schedules jobs in a way that achieves maximum overall benefit while maintaining efficiency in resource utilization.
 
 **Deliverable:** A concise report comparing the performance and outcomes of the Weighted Interval Scheduling with DP algorithm across the two datasets.
+
+## Folder Structure
+
+```
+ ├── data/  
+ │   ├── original-datasets/         # Unprocessed datasets from Kaggle    
+ │   │   ├── cloud-workload-job-traces/
+ │   │   └── medical-appointment-scheduling-system/
+ │   └── processed-datasets/        # Datasets processed from process_data.ipynb
+ │       ├── cloud-workload-job-traces/
+ │       └── medical-appointment-scheduling-system/
+ ├── jupyter-notebooks              # Main code is run here
+ │   ├── process_data.ipynb
+ │   └── run_algorithm.ipynb
+ ├── python                         # Algorithm and data processing functions
+ │   ├── algorithm_test.py
+ │   ├── data_processing.py
+ │   └── weighted_interval_scheduling.py
+ ├── results                        # Charts and schedules produced from run_algorithm.ipynb
+ │   ├── cloud-workload/
+ │   │   ├── bar-chart/
+ │   │   ├── gantt-chart/
+ │   │   ├── schedule
+ │   └── medical-appointments/
+ │       ├── bar-chart/
+ │       ├── gantt-chart/
+ │       └── schedule/
+ └── README.md
+ ```
