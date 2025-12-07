@@ -4,7 +4,7 @@ def create_interval_schedule(job_interval, start_time, finish_time, priority):
     # Step 1: Sort jobs by finish time and renumber so f1 <= f2 <= ... <= fn -> O(n log n)
     jobs = []
     for i in range(n):
-        jobs.append((job_interval[i], start_time[i], finish_time[i], priority[i]))
+        jobs.append((job_interval[i], start_time[i], finish_time[i], priority[i], i))
 
     jobs.sort(key=lambda f: f[2])
     
@@ -12,6 +12,7 @@ def create_interval_schedule(job_interval, start_time, finish_time, priority):
     start = [jobs[i][1] for i in range(n)]
     finish = [jobs[i][2] for i in range(n)]
     weight = [jobs[i][3] for i in range(n)]
+    original_indices = [jobs[i][4] for i in range(n)]
 
     # Step 2: Compute p[1], p[2], ..., p[n], Latest job that DOESN'T overlap with job j -> O(log n)
     p = []
@@ -31,7 +32,7 @@ def create_interval_schedule(job_interval, start_time, finish_time, priority):
             M[j] = max(M[j - 1], weight[i])
 
     # Step 4: Return results
-    selected_jobs = construct_solution(n, weight, p, M, job_interval)
+    selected_jobs = construct_solution(n, weight, p, M, original_indices)
     return M[n], selected_jobs
 
 def binary_search(finish_times, start, curr):
@@ -53,7 +54,7 @@ def binary_search(finish_times, start, curr):
 
     return result
 
-def construct_solution(n, weight, p, M, interval):
+def construct_solution(n, weight, p, M, original_indices):
     selected_jobs = []
     j = n
 
@@ -63,7 +64,7 @@ def construct_solution(n, weight, p, M, interval):
         # Check if job was included in M
         if weight[i] + M[p[i] + 1] >= M[j - 1]:
             # Job included, move to p[j] predecessor
-            selected_jobs.append(interval[i])
+            selected_jobs.append(original_indices[i])
             j = p[i] + 1 if p[i] != -1 else 0
         else:
             # Job is not included, move to j-1 prev job

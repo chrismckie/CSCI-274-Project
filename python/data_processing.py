@@ -33,7 +33,7 @@ def get_week_by_start_date(df, week_start):
     end = "end_minutes"
     priority = "priority"
 
-    num_weeks = 3 if is_medical_data else 1     # Medical data combines appointments over multiple weeks
+    num_weeks = 2 if is_medical_data else 1     # Medical data combines appointments over multiple weeks
     week_start = pd.to_datetime(week_start)
     week_end = week_start + pd.Timedelta(days=7 * num_weeks)
 
@@ -76,6 +76,7 @@ def load_medical_data(filepath):
 
     df['appointment_date'] = pd.to_datetime(df['appointment_date'])
     df = df.dropna(subset=['appointment_id', 'start_time', 'end_time', 'age', 'appointment_duration'])
+    df = df[df['appointment_duration'] <= 1440].copy()
 
     df['start_minutes'] = df['start_time'].apply(time_to_minutes)
     df['end_minutes'] = df['end_time'].apply(time_to_minutes)
@@ -99,11 +100,17 @@ def load_cloud_data(filepath):
     df['Start_Time'] = pd.to_datetime(df['Start_Time'])
     df['End_Time'] = pd.to_datetime(df['End_Time'])
 
+    # Clean data
     df = df.dropna(subset=['Job_ID', 'Start_Time', 'End_Time', 'Priority_Level'])
+    df['duration_hours'] = (df['End_Time'] - df['Start_Time']).dt.total_seconds() / 3600
 
     df['job_date'] = df['Start_Time'].dt.date
     df['start_minutes'] = df['Start_Time'].apply(time_to_minutes)
     df['end_minutes'] = df['End_Time'].apply(time_to_minutes)
+
+    # Filter out jobs that are longer than 24 hours or extend into the next day
+    df = df[df['duration_hours'] <= 24].copy()
+    df = df[df['end_minutes'] > df['start_minutes']].copy()
 
     priority_map = {'low': 1, 'medium': 2, 'high': 3}
     df['priority'] = df['Priority_Level'].str.lower().map(priority_map)
@@ -118,3 +125,8 @@ def load_cloud_data(filepath):
     result = result.rename(columns={'Job_ID': 'job_interval', 'Start_Time': 'start_time', 'End_Time': 'end_time'})
 
     return result
+
+def min_to_hhmm(x, pos):
+    hours = int(x) // 60
+    minutes = int(x) % 60
+    return f"{hours:02d}:{minutes:02d}"
